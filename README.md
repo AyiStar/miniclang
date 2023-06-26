@@ -1,2 +1,1 @@
-# miniclang
-A small C language front-end for LLVM
+# MiniClang: A small C language front-end for LLVM

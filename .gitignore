@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# LLVM IR files
+*.ll
+*.bc
+
+# Directories
+build/
+.vscode/
