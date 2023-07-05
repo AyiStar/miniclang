@@ -1,1 +1,1 @@
-add_subdirectory(bash)
+add_subdirectory(python)

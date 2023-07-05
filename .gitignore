@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# Module files
+*.pcm
+
 # LLVM IR files
 *.ll
 *.bc

@@ -1,7 +1,38 @@
-#include "token.h"
+export module token;
 
-Token::Token(TokenKind kind, SourceLocation start_loc, int length):
-  kind_{kind}, start_{start_loc}, length_{length}, end_{start_loc.getLocPtr() + length} {}
+import source_location;
+
+export enum class TokenKind {
+  kPunct, // Punctuators
+  kNum,   // Numeric literals
+  kEOF,   // EOF
+  kUnknown
+};
+
+export class Token {
+public:
+  Token() = default;
+  Token(TokenKind kind, SourceLocation start_loc, int length);
+
+  SourceLocation getStart() const;
+  SourceLocation getEnd() const;
+  int getLength() const;
+  TokenKind getKind() const;
+  int getValue() const;
+  void setValue(int val);
+
+private:
+  TokenKind kind_ = TokenKind::kUnknown;
+  SourceLocation start_ = nullptr;
+  SourceLocation end_ = nullptr;
+  int length_ = 0; // token length
+
+  int value_ = 0; // hold the value if token kind is kNum
+};
+
+
+Token::Token(TokenKind kind, SourceLocation start_loc, int length) :
+  kind_{ kind }, start_{ start_loc }, length_{ length }, end_{ start_loc.getLoc() + length } {}
 
 SourceLocation Token::getStart() const { return start_; }
 
