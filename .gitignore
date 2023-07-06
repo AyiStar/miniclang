@@ -38,6 +38,10 @@
 *.ll
 *.bc
 
+# Python files
+__pycache__/
+.pytest_cache/
+
 # Directories
 build/
 .vscode/

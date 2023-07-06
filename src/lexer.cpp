@@ -2,7 +2,6 @@ module;
 
 #include <cctype>
 #include <sstream>
-#include <string_view>
 
 export module lexer;
 
@@ -12,7 +11,7 @@ import token;
 export class InvalidTokenException {
 public:
   InvalidTokenException(SourceLocation loc): loc_{loc} {}
-  std::string_view what() {
+  std::string what() {
     std::ostringstream msg;
     msg << "Invalid token: ";
     msg << *loc_.getLoc();

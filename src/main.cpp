@@ -3,55 +3,49 @@
 #include <iostream>
 #include <charconv>
 #include <string_view>
+#include <iterator>
+
+import token;
+import source_location;
+import lexer;
+
+void syntax_error() {
+  std::cerr << "Invalid syntex" << std::endl;
+  exit(1);
+}
 
 int main(int argc, char **argv) {
+
   if (argc != 2) {
     std::cerr << argv[0] << ": invalid number of arguments" << std::endl;
     return 1;
   }
 
-  std::string_view program(argv[1]);
-  std::string_view valid_ops("+-");
-  char last_op = '+';
-  int operand;
-
+  const char* buffer{ argv[1] };
+  Lexer lexer{ buffer };
   std::ostringstream code;
-  size_t counter = 1;  // used for register 
+  size_t counter = 0;  // used for register 
 
   code << "define i32 @main(i32 %argc, i8** %argv) {\n";
-  code << "%" << counter << " = xor i32 0, 0\n";
-  while (!program.empty()) {
-    // parse an integer
-    auto [ptr, ec] = std::from_chars(program.begin(), program.end(), operand);
-    if (ec == std::errc::invalid_argument) {
-      std::cerr << "Syntax error: invalid number at " << program.at(0) << std::endl;
-      return 1;
+  code << "entry:\n";
+  Token token;
+  // parse the first token
+  lexer.lex(token);
+  if (token.getKind() != TokenKind::kNum) {
+    syntax_error();
+  }
+  code << "%" << counter << " = add i32 0, " << token.getValue() << "\n";
+  while (lexer.lex(token)) {
+    if (token.getKind() != TokenKind::kPunct) {
+      syntax_error();
     }
-    else if (ec == std::errc::result_out_of_range) {
-      std::cerr << "Parse error: number is larger than an int";
+    std::string op_inst{(*token.getStart().getLoc() == '+') ? "add" : "sub"};
+    if (!lexer.lex(token) || token.getKind() != TokenKind::kNum) {
+      syntax_error();
     }
-    // operator on integer
-    switch (last_op) {
-      case '+':
-        code << "%" << (counter + 1) << " = add i32 %" << counter << ", " << operand << "\n";
-        counter++;
-        break;
-      case '-':
-        code << "%" << (counter + 1) << " = sub i32 %" << counter << ", " << operand << "\n";
-        counter++;
-        break;
-    }
-    // consume the next operator
-    if (ptr != program.end()) {
-      last_op = *ptr;
-      if (valid_ops.find(last_op) == std::string_view::npos) {
-        std::cerr << "Syntax error: invalid operator " << last_op << std::endl;
-        return 1;
-      }
-      ptr++;
-    }
-    // proceed
-    program = program.substr(std::distance(program.begin(), ptr));
+    int operand{ token.getValue() };
+    code << "%" << (counter + 1) << " = " << op_inst << " i32 %" << counter << ", " << operand << "\n";
+    counter++;
   }
   code << "ret i32 %" << counter << "\n";
   code << "}\n";

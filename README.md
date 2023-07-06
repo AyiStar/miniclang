@@ -9,7 +9,3 @@ Currently, I am following [chabicc](https://github.com/rui314/chibicc) which con
 2. I target at the LLVM IR instead of asm code to leverage the great LLVM toolchains (that's why I call it miniclang).
 
 I also refer to LLVM/Clang docs for better architecture and API design.
-
-## requirements
-
-* spdlog v1.11.0
